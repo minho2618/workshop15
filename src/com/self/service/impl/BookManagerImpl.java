@@ -1,20 +1,14 @@
 package com.self.service.impl;
 
-import java.security.PublicKey;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Vector;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.self.service.BookManager;
 import com.self.vo.Book;
 import com.self.vo.Magazine;
 
 public class BookManagerImpl implements BookManager {
-	
-	HashMap<Integer,java.awt.print.Book> books = null;
+
+	HashMap<Integer, Book> books = null;
 
 	private static BookManagerImpl service = new BookManagerImpl();
 
@@ -26,100 +20,98 @@ public class BookManagerImpl implements BookManager {
 		return service;
 	}
 
-
 	@Override
 	public void insertBook(Book book) {
 
-		if(books.containsKey(book.getIsbn())){
+		if (books.containsKey(book.getIsbn())) {
 			System.out.println("이미 존재하는 책입니다");
-			//DuplicateIsbnException
-		}else {
+			// DuplicateIsbnException
+		} else {
 			books.put(book.getIsbn(), book);
 		}
-		
+
 	}
 
 	@Override
 	public void deleteBook(int isbn) {
-		if(books.containsKey(isbn)) {
+		if (books.containsKey(isbn)) {
 			books.remove(isbn);
-		}else {
+		} else {
 			System.out.println("해당 책이 없습니다.");
-			//RecordNotFoundException
+			// RecordNotFoundException
 		}
-		
+
 	}
 
-	
 	@Override
 	public void updateBook(Book book) {
-		
-		if(books.containsKey(book.getIsbn())) {
+
+		if (books.containsKey(book.getIsbn())) {
 			books.replace(book.getIsbn(), book);
-		}else {
-			//에러 처리
+		} else {
+			// 에러 처리
 		}
 	}
 
 	@Override
 	public Book getBook(int isbn) {
-		if(books.containsKey(isbn)) {
+		if (books.containsKey(isbn)) {
 			return books.get(isbn);
-		}else {
-			//에러처리
+		} else {
+			// 에러처리
 			return null;
 		}
 	}
 
-	//test 필요 
+	// test 필요
 	@Override
-	public HashMap<Integer,Book> getAllBook() {		
-		//책이 존재하지 않을 때 에러처리-> getBook에러와 같음
+	public HashMap<Integer, Book> getAllBook() {
+		// 책이 존재하지 않을 때 에러처리-> getBook에러와 같음
 		return books;
 	}
 
 	@Override
 	public int getNumberOfBooks() {
-		//책의 총 수량 
+		// 책의 총 수량
 		// 에러처리 불필요
 		return books.size();
 	}
 
 	@Override
-	public HashMap<Integer,Book> searchBookByTitle(String title) {
-		HashMap<Integer, java.awt.print.Book> tempMap = new HashMap<>();
-		for(Book b : books.values()) {
-			if(b.getTitle().equals(title)) {
+	public HashMap<Integer, Book> searchBookByTitle(String title) {
+		HashMap<Integer, Book> tempMap = new HashMap<>();
+		for (Book b : books.values()) {
+			if (b.getTitle().equals(title)) {
 				tempMap.put(b.getIsbn(), b);
 			}
-			
+
 		}
-		
-		//존재하지않을때 오류 에러처리
+
+		// 존재하지않을때 오류 에러처리
 		return tempMap;
 	}
 
 	@Override
-	public HashMap<Integer,Book> searchBookByPrice(int min, int max) {
-		HashMap<Integer, java.awt.print.Book> tempMap = new HashMap<>();
-		for(Book b : books.values()) {
-			if(b.getPrice() >= min && b.getPrice() <= max) {
+	public HashMap<Integer, Book> searchBookByPrice(int min, int max) {
+		HashMap<Integer, Book> tempMap = new HashMap<>();
+		for (Book b : books.values()) {
+			if (b.getPrice() >= min && b.getPrice() <= max) {
 				tempMap.put(b.getIsbn(), b);
 			}
-			
+
 		}
-		
-		//존재하지않을때 오류 에러처리
+
+		// 존재하지않을때 오류 에러처리
 		return tempMap;
 	}
 
 	@Override
 	public double getSumPriceOfBooks() {
 		double sum = 0;
-		for(Book b : books.values()) {
+		for (Book b : books.values()) {
 			sum += b.getPrice();
 		}
-		//에러처리 필요 없음
+		// 에러처리 필요 없음
 		return sum;
 	}
 
@@ -131,13 +123,13 @@ public class BookManagerImpl implements BookManager {
 	@Override
 	public HashMap<Integer, Book> magazineOfThisYearInfo(int year) {
 		HashMap<Integer, Book> tempMap = new HashMap<>();
-		
+
 		for (Book b : books.values()) {
-			if (b instanceof Magazine && ((Magazine)b).getPublishDate().getYear() == year) {
-				tempMap.put(b.getIsbn(),b);
+			if (b instanceof Magazine && ((Magazine) b).getPublishDate().getYear() == year) {
+				tempMap.put(b.getIsbn(), b);
 			}
 		}
-		
+
 		return tempMap;
 	}
 
