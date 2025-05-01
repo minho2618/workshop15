@@ -2,9 +2,7 @@ package com.self.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import com.self.vo.Book;
-import com.self.vo.Magazine;
 
 public interface BookManager {
 	void insertBook(Book book);
@@ -14,9 +12,8 @@ public interface BookManager {
 	HashMap<Integer, Book> getAllBook();
 	int getNumberOfBooks();
 	HashMap<Integer, Book> searchBookByTitle(String title);
-	HashMap<Integer, Book> searchBookByPrice(int min, int max);
+	HashMap<Integer, Book>searchBookByPrice(int min, int max);
 	double getSumPriceOfBooks();
 	double getAvgPriceOfBooks();	
-	
 	HashMap<Integer, Book> magazineOfThisYearInfo(int year);
 }
