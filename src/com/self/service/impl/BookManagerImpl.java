@@ -5,21 +5,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.self.service.BookManager;
 import com.self.vo.Book;
 import com.self.vo.Magazine;
 
 public class BookManagerImpl implements BookManager {
-	//Vector v = new Vector();
 	
-	ArrayList<Book> books = null;
-	//public static final int MAX_SIZE = 100;
+	HashMap<Integer,java.awt.print.Book> books = null;
 
 	private static BookManagerImpl service = new BookManagerImpl();
 
 	private BookManagerImpl() {
-		books = new ArrayList<>();
+		books = new HashMap<>();
 	}
 
 	public static BookManagerImpl getInstance() {
@@ -29,123 +29,97 @@ public class BookManagerImpl implements BookManager {
 
 	@Override
 	public void insertBook(Book book) {
-		boolean find = false;
-		
-		for (Book b : books) {
-			if (b.getIsbn() == book.getIsbn()) {
-				find = true;
-				System.out.println("이미 등록되어진 책입니다.");				
-				return;
-			}
-		}
-		
-		if (!find) {			
-			books.add(book);
-			System.out.println(book.getTitle() +"이 등록되었습니다 ");
+
+		if(books.containsKey(book.getIsbn())){
+			System.out.println("이미 존재하는 책입니다");
+			//DuplicateIsbnException
+		}else {
+			books.put(book.getIsbn(), book);
 		}
 		
 	}
 
 	@Override
 	public void deleteBook(int isbn) {
-		boolean find = false;
-		
-		for (Book b : books) {
-			if (b.getIsbn() == isbn) {
-				find = true;
-				break;
-			}
+		if(books.containsKey(isbn)) {
+			books.remove(isbn);
+		}else {
+			System.out.println("해당 책이 없습니다.");
+			//RecordNotFoundException
 		}
 		
-		if (!find) {
-			System.out.println("해당하는 책이 존재하지 않습니다.");
-			return;
-		} else {
-			for(int i=0; i<books.size(); i++) {
-				if(books.get(i).getIsbn() == isbn) {
-					System.out.println(books.remove(i)+"가 삭제되었습니다.");
-					break;
-				}
-			}
-		}
 	}
 
-	//test 필요
+	
 	@Override
 	public void updateBook(Book book) {
-		boolean find = false;
 		
-		for (Book b : books) {
-			if (b.getIsbn() == book.getIsbn()) {
-				find = true;
-				break;
-			}
+		if(books.containsKey(book.getIsbn())) {
+			books.replace(book.getIsbn(), book);
+		}else {
+			//에러 처리
 		}
-		
-		if (!find) {
-			System.out.println("해당하는 책이 존재하지 않습니다.");
-			return;
-		} else {
-			for(int i=0; i<books.size(); i++) {
-				if (books.get(i).getIsbn() == book.getIsbn()) {
-					books.set(i, book);
-				}
-			}
-		}	
-		
 	}
 
 	@Override
 	public Book getBook(int isbn) {
-		for(int i=0; i<books.size(); i++) {
-			if(books.get(i).getIsbn() == isbn) {
-				return books.get(i);
-			}
+		if(books.containsKey(isbn)) {
+			return books.get(isbn);
+		}else {
+			//에러처리
+			return null;
 		}
-		return null;
 	}
 
 	//test 필요 
 	@Override
-	public ArrayList<Book> getAllBook() {		
+	public HashMap<Integer,Book> getAllBook() {		
+		//책이 존재하지 않을 때 에러처리-> getBook에러와 같음
 		return books;
 	}
 
 	@Override
 	public int getNumberOfBooks() {
 		//책의 총 수량 
-		
+		// 에러처리 불필요
 		return books.size();
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByTitle(String title) {
-		ArrayList<Book> tempArrayList = new ArrayList<>();
-		for(int i=0; i<books.size(); i++) {
-			if(books.get(i).getTitle().equals(title)) {
-				tempArrayList.add(books.get(i));
+	public HashMap<Integer,Book> searchBookByTitle(String title) {
+		HashMap<Integer, java.awt.print.Book> tempMap = new HashMap<>();
+		for(Book b : books.values()) {
+			if(b.getTitle().equals(title)) {
+				tempMap.put(b.getIsbn(), b);
 			}
+			
 		}
-		return tempArrayList;
+		
+		//존재하지않을때 오류 에러처리
+		return tempMap;
 	}
 
 	@Override
-	public ArrayList<Book> searchBookByPrice(int min, int max) {
-		ArrayList<Book> tempArrayList = new ArrayList<>();
-		for(int i=0; i<books.size(); i++) {
-			if(books.get(i).getPrice() >= min && books.get(i).getPrice()<=max){
-				tempArrayList.add(books.get(i));
+	public HashMap<Integer,Book> searchBookByPrice(int min, int max) {
+		HashMap<Integer, java.awt.print.Book> tempMap = new HashMap<>();
+		for(Book b : books.values()) {
+			if(b.getPrice() >= min && b.getPrice() <= max) {
+				tempMap.put(b.getIsbn(), b);
 			}
+			
 		}
-		return tempArrayList;
+		
+		//존재하지않을때 오류 에러처리
+		return tempMap;
 	}
 
 	@Override
 	public double getSumPriceOfBooks() {
 		double sum = 0;
-		for(Book b : books) {
+		for(Book b : books.values()) {
 			sum += b.getPrice();
 		}
+		//에러처리 필요 없음
 		return sum;
 	}
 
@@ -155,16 +129,16 @@ public class BookManagerImpl implements BookManager {
 	}
 
 	@Override
-	public ArrayList<Magazine> magazineOfThisYearInfo(int year) {
-		ArrayList<Magazine> temp = new ArrayList<>();
+	public HashMap<Integer, Book> magazineOfThisYearInfo(int year) {
+		HashMap<Integer, Book> tempMap = new HashMap<>();
 		
-		for (Book b : books) {
+		for (Book b : books.values()) {
 			if (b instanceof Magazine && ((Magazine)b).getPublishDate().getYear() == year) {
-				temp.add((Magazine)b);
+				tempMap.put(b.getIsbn(),b);
 			}
 		}
 		
-		return temp;
+		return tempMap;
 	}
 
 }
