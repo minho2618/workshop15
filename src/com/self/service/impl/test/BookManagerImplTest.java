@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import com.self.exception.DuplicateIsbnException;
 import com.self.exception.InvalidDateException;
-import com.self.exception.RecordNotFountException;
+import com.self.exception.RecordNotFoundException;
 import com.self.service.impl.BookManagerImpl;
 import com.self.util.MyDate;
 import com.self.vo.Book;
@@ -33,15 +33,16 @@ public class BookManagerImplTest {
 			// 1. 책 추가 및 전체 검색
 			System.out.println("==== 책 추가 및 전체 검색 ====");
 			
-			HashMap<Integer, Book> books = service.getAllBook();		
-//			books.sort(new Comparator<Book>() {			
-//				@Override
-//				public int compare(Book b1, Book b2) {
-//					return b1.getIsbn() - b2.getIsbn();
-//				}
-//			});
+			HashMap<Integer,Book> books = service.getAllBook();
+			ArrayList<Book> booksArrayList = new ArrayList<>(books.values());
+			booksArrayList.sort(new Comparator<Book>() {			
+				@Override
+				public int compare(Book b1, Book b2) {
+					return b1.getIsbn() - b2.getIsbn();
+				}
+			});
 			
-			for (Book b : books.values()) {
+			for (Book b : booksArrayList) {
 				System.out.println(b);
 			}
 			
@@ -58,12 +59,11 @@ public class BookManagerImplTest {
 			
 			// 3. 책 수정
 			System.out.println("==== 책 수정 ====");
-//			service.updateBook(new Novel(777, "사라진 목격자", "박현수", "스릴러 하우스", 18000.0, "스릴러"));
-//			service.updateBook(new Magazine(888, "오늘의 요리", "박지현 셰프", "맛있는 책방", 8800.0, new MyDate(2025, 7, 7)));
-//			service.updateBook(new Novel(444, "듄", "프랭크 허버트", "황금가지", 22500.0, "SF"));
-//			for (Book b : service.getAllBook().values()) {
-//				System.out.println(b);
-//			}
+			service.updateBook(new Novel(777, "사라진 목격자", "박현수", "스릴러 하우스", 18000.0, "스릴러"));
+			service.updateBook(new Magazine(888, "오늘의 요리", "박지현 셰프", "맛있는 책방", 8800.0, new MyDate(2025, 7, 7)));
+			for (Book b : service.getAllBook().values()) {
+				System.out.println(b);
+			}
 			
 			System.out.println();
 			
@@ -108,16 +108,17 @@ public class BookManagerImplTest {
 			System.out.println();
 			
 			System.out.println("==== 올해 책 정렬 ====");
+				
+			ArrayList<Magazine> yearsArrayList = new ArrayList<>(service.magazineOfThisYearInfo(2025).values());
 			
-			HashMap<Integer, Book> mList = (HashMap<Integer, Book>) service.magazineOfThisYearInfo(9999).values();		
-//			mList.sort(new Comparator<Magazine>() {			
-//				@Override
-//				public int compare(Magazine m1, Magazine m2) {
-//					return m2.getPublishingMonth() - m1.getPublishingMonth();
-//				}
-//			});
+			yearsArrayList.sort(new Comparator<Magazine>() {			
+				@Override
+				public int compare(Magazine m1, Magazine m2) {
+					return m2.getPublishingMonth() - m1.getPublishingMonth();
+				}
+			});
 			
-			for (Book m : mList.values()) {
+			for (Book m : yearsArrayList) {
 				System.out.println(m);
 			}
 			
@@ -125,7 +126,7 @@ public class BookManagerImplTest {
 
 		} catch (DuplicateIsbnException de) {
 			System.out.println(de.getMessage());
-		} catch (RecordNotFountException re) {
+		} catch (RecordNotFoundException re) {
 			System.out.println(re.getMessage());
 		} catch (InvalidDateException ie) {
 			System.out.println(ie.getMessage());
