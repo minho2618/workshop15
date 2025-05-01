@@ -14,11 +14,11 @@ public interface BookManager {
 	void deleteBook(int isbn) throws RecordNotFoundException;
 	void updateBook(Book book) throws RecordNotFoundException;
 	Book getBook(int isbn) throws RecordNotFoundException;
-	HashMap<Integer, Book> getAllBook() throws RecordNotFoundException;
+	ArrayList<Book> getAllBook() throws RecordNotFoundException;
 	int getNumberOfBooks();
-	HashMap<Integer, Book> searchBookByTitle(String title) throws RecordNotFoundException;
-	HashMap<Integer, Book> searchBookByPrice(int min, int max) throws RecordNotFoundException;
+	ArrayList<Book> searchBookByTitle(String title) throws RecordNotFoundException;
+	ArrayList<Book> searchBookByPrice(int min, int max) throws RecordNotFoundException;
 	double getSumPriceOfBooks();
 	double getAvgPriceOfBooks();	
-	HashMap<Integer, Magazine> magazineOfThisYearInfo(int year) throws InvalidDateException;
+	ArrayList<Book> magazineOfThisYearInfo(int year) throws InvalidDateException;
 }

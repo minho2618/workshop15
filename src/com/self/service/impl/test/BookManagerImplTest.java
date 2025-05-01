@@ -29,24 +29,36 @@ public class BookManagerImplTest {
 			service.insertBook(new Novel(999, "쿠로미인생", "쿠로미", "GoodPublisher", 22000.0, "코믹"));
 			service.insertBook(new Novel(888, "부탁해! 마이멜로디", "시나모롤", "GoodPublisher", 29000.0, "스릴러"));
 			service.insertBook(new Novel(666, "포챠코시나모롤", "포챠코", "TestPblisher", 19000.0, "액션"));
+		}catch (DuplicateIsbnException de) {
+			System.out.println(de.getMessage());
+		}
 			
 			// 1. 책 추가 및 전체 검색
 			System.out.println("==== 책 추가 및 전체 검색 ====");
 			
-			HashMap<Integer,Book> books = service.getAllBook();
-			ArrayList<Book> booksArrayList = new ArrayList<>(books.values());
-			booksArrayList.sort(new Comparator<Book>() {			
-				@Override
-				public int compare(Book b1, Book b2) {
-					return b1.getIsbn() - b2.getIsbn();
+			try {
+				HashMap<Integer,Book> books = service.getAllBook();
+				ArrayList<Book> booksArrayList = new ArrayList<>(books.values());
+				booksArrayList.sort(new Comparator<Book>() {			
+					@Override
+					public int compare(Book b1, Book b2) {
+						return b1.getIsbn() - b2.getIsbn();
+					}
+				});
+				
+				for (Book b : booksArrayList) {
+					System.out.println(b);
 				}
-			});
-			
-			for (Book b : booksArrayList) {
-				System.out.println(b);
+				
+				System.out.println();
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			} finally {
+				
 			}
 			
-			System.out.println();
+		
 			
 			// 2. 책 삭제
 			System.out.println("==== 책 삭제 : 666 ====");
@@ -124,13 +136,16 @@ public class BookManagerImplTest {
 			
 			System.out.println();
 
-		} catch (DuplicateIsbnException de) {
-			System.out.println(de.getMessage());
-		} catch (RecordNotFoundException re) {
-			System.out.println(re.getMessage());
-		} catch (InvalidDateException ie) {
-			System.out.println(ie.getMessage());
-		}
+		} 
+		
+		
+//		catch (DuplicateIsbnException de) {
+//			System.out.println(de.getMessage());
+//		} catch (RecordNotFoundException re) {
+//			System.out.println(re.getMessage());
+//		} catch (InvalidDateException ie) {
+//			System.out.println(ie.getMessage());
+//		}
 	}
 
 }
