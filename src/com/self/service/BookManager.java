@@ -20,5 +20,5 @@ public interface BookManager {
 	ArrayList<Book> searchBookByPrice(int min, int max) throws RecordNotFoundException;
 	double getSumPriceOfBooks();
 	double getAvgPriceOfBooks();	
-	ArrayList<Book> magazineOfThisYearInfo(int year) throws InvalidDateException;
+	ArrayList<Magazine> magazineOfThisYearInfo(int year) throws InvalidDateException;
 }

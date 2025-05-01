@@ -1,6 +1,8 @@
 package com.self.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import com.self.exception.DuplicateIsbnException;
 import com.self.exception.InvalidDateException;
@@ -26,52 +28,52 @@ public class BookManagerImpl implements BookManager {
 	@Override
 	public void insertBook(Book book) throws DuplicateIsbnException {
 
-		if (books.containsKey(book.getIsbn())) {
+		if (books.containsKey(book.getIsbn()))
 			throw new DuplicateIsbnException("이미 존재하는 책입니다.");
-		} else {
-			books.put(book.getIsbn(), book);
-		}
+	
+		books.put(book.getIsbn(), book);
+		
 
 	}
 
 	@Override
 	public void deleteBook(int isbn) throws RecordNotFoundException {
-		if (books.containsKey(isbn)) {
-			books.remove(isbn);
-		} else {
-			System.out.println("해당 책이 없습니다.");
+		if (!books.containsKey(isbn))
 			throw new RecordNotFoundException("해당 책이 없습니다.");
-		}
-
+		books.remove(isbn);
 	}
 
 	@Override
 	public void updateBook(Book book) throws RecordNotFoundException {
 
-		if (books.containsKey(book.getIsbn())) {
-			books.replace(book.getIsbn(), book);
-		} else {
+		if (!books.containsKey(book.getIsbn()))
 			throw new RecordNotFoundException("해당 책이 없습니다.");
-		}
+			
+		books.replace(book.getIsbn(), book);
 	}
 
 	@Override
 	public Book getBook(int isbn) throws RecordNotFoundException {
-		if (books.containsKey(isbn)) {
-			return books.get(isbn);
-		} else {
+		if (books.containsKey(isbn))
 			throw new RecordNotFoundException("해당 책이 없습니다.");
-		}
+		return books.get(isbn);
+		
 	}
 
 	// test 필요
 	@Override
-	public HashMap<Integer, Book> getAllBook( ) throws RecordNotFoundException {
+	public ArrayList<Book> getAllBook( ) throws RecordNotFoundException {
 		// 책이 존재하지 않을 때 에러처리-> getBook에러와 같음
 		if (books.isEmpty())
 			throw new RecordNotFoundException("책이 없습니다.");
+		
+		ArrayList<Book> tmpList = new ArrayList<Book>();
+		Set<Integer> set = books.keySet();
+		for (int n : set) {
+			tmpList.add(books.get(n));
+		}
 
-		return books;
+		return tmpList;
 	}
 
 	@Override
@@ -82,45 +84,45 @@ public class BookManagerImpl implements BookManager {
 	}
 
 	@Override
-	public HashMap<Integer, Book> searchBookByTitle(String title) throws RecordNotFoundException {
-		HashMap<Integer, Book> tempMap = new HashMap<>();
+	public ArrayList<Book> searchBookByTitle(String title) throws RecordNotFoundException {
+		ArrayList<Book> tempList = new ArrayList<>();
+		Set<Integer> set = books.keySet();
 		
-		for (Book b : books.values()) {
-			if (b.getTitle().equals(title)) {
-				tempMap.put(b.getIsbn(), b);
-			}
-			
+		for (int n : set) {
+			if (books.get(n).getTitle().equals(title)) {
+				tempList.add(books.get(n));
+			}			
 		}
 		
-		if (tempMap.isEmpty()) throw new RecordNotFoundException("검색하려는 책이 없습니다.");
+		if (tempList.isEmpty()) throw new RecordNotFoundException("검색하려는 책이 없습니다.");
 
-		// 존재하지않을때 오류 에러처리
-		return tempMap;
+		return tempList;
 	}
 
 	@Override
-	public HashMap<Integer, Book> searchBookByPrice(int min, int max) throws RecordNotFoundException {
-		HashMap<Integer, Book> tempMap = new HashMap<>();
-		for (Book b : books.values()) {
-			if (b.getPrice() >= min && b.getPrice() <= max) {
-				tempMap.put(b.getIsbn(), b);
+	public ArrayList<Book> searchBookByPrice(int min, int max) throws RecordNotFoundException {
+		ArrayList<Book> tempList = new ArrayList<>();
+		Set<Integer> set = books.keySet();
+		
+		for (int n : set) {
+			if (books.get(n).getPrice() >= min && books.get(n).getPrice() <= max) {
+				tempList.add(books.get(n));
 			}
-
 		}
 		
-		if (tempMap.isEmpty()) throw new RecordNotFoundException("검색하려는 책이 없습니다.");
+		if (tempList.isEmpty()) throw new RecordNotFoundException("검색하려는 책이 없습니다.");
 
-		// 존재하지않을때 오류 에러처리
-		return tempMap;
+		return tempList;
 	}
 
 	@Override
 	public double getSumPriceOfBooks() {
 		double sum = 0;
-		for (Book b : books.values()) {
-			sum += b.getPrice();
+		Set<Integer> set = books.keySet();
+		
+		for (int n : set) {
+			sum += books.get(n).getPrice();
 		}
-		// 에러처리 필요 없음
 		return sum;
 	}
 
@@ -130,18 +132,19 @@ public class BookManagerImpl implements BookManager {
 	}
 
 	@Override
-	public HashMap<Integer, Magazine> magazineOfThisYearInfo(int year) throws InvalidDateException {
-		HashMap<Integer, Magazine> tempMap = new HashMap<>();
+	public ArrayList<Magazine> magazineOfThisYearInfo(int year) throws InvalidDateException {
+		ArrayList<Magazine> tempList = new ArrayList<>();
+		Set<Integer> set = books.keySet();
 		
 		if (year > 2025) throw new InvalidDateException("존재하지 않는 년도입니다.");
 
-		for (Book b : books.values()) {
-			if (b instanceof Magazine && ((Magazine) b).getPublishDate().getYear() == year) {
-				tempMap.put(b.getIsbn(), (Magazine) b);
+		for (int n : set) {
+			if (books.get(n) instanceof Magazine && ((Magazine) books.get(n)).getPublishDate().getYear() == year) {
+				tempList.add((Magazine) books.get(n));
 			}
 		}
 
-		return tempMap;
+		return tempList;
 	}
 
 }
